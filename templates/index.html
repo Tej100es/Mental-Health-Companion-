@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SoulSync | AI Mental Health Companion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #be9f38;
+      --primary-light: #b2ed29;
+      --primary-dark: #27a27d;
+      --accent: #00cec9;
+      --text: #ffffff;
+      --bg-dark: #0f0e17;
+      --bg-light: #1e1e2e;
+      --border: #4a4a6a;
+      --shadow: 0 20px 50px rgba(56, 152, 49, 0.781);
+      --glow: 0 0 15px rgba(108, 92, 231, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
+      animation: float 15s infinite linear;
+      z-index: -1;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-5%, 5%) rotate(5deg); }
+      50% { transform: translate(5%, -5%) rotate(-5deg); }
+      75% { transform: translate(-5%, 5%) rotate(5deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      perspective: 1000px;
+    }
+
+    .form-container {
+      background: rgba(30, 30, 46, 0.8);
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow), var(--glow);
+      display: none;
+      transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(74, 74, 106, 0.3);
+      transform-style: preserve-3d;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-container::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        to bottom right,
+        transparent,
+        transparent,
+        transparent,
+        rgba(166, 155, 255, 0.1)
+      );
+      transform: rotate(30deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+
+    .form-container.active {
+      display: block;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px) rotateX(10deg); }
+      to { opacity: 1; transform: translateY(0) rotateX(0); }
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 1.8rem;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1.8rem;
+      letter-spacing: 0.5px;
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .form-container h2::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      border-radius: 3px;
+    }
+
+    .form-container input {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 1.2rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      background-color: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+
+    .form-container input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .form-container input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+      background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .form-container button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 0.8rem;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .form-container button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .form-container button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+    }
+
+    .form-container button:hover::before {
+      opacity: 1;
+    }
+
+    .form-container button:active {
+      transform: translateY(0);
+    }
+
+    .form-container p {
+      text-align: center;
+      margin-top: 1.8rem;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .form-container a {
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .form-container a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .form-container a:hover {
+      color: var(--accent);
+    }
+
+    .form-container a:hover::after {
+      width: 100%;
+    }
+
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(166, 155, 255, 0.3);
+      border-radius: 50%;
+      animation: floatParticle 15s infinite linear;
+    }
+
+    @keyframes floatParticle {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <!-- Login Form -->
+    <div class="form-container active" id="loginForm">
+      <h2>Welcome to SoulSync!</h2>
+      <form id="loginFormElement">
+        <input type="email" id="loginEmail" placeholder="Your Email" required />
+        <input type="password" id="loginPassword" placeholder="Your Password" required />
+        <button type="submit">Begin Healing Journey</button>
+      </form>
+      <p>New to SoulSync? <a href="#" id="showRegister">Create Account</a></p>
+    </div>
+
+    <!-- Register Form -->
+    <div class="form-container" id="registerForm">
+      <h2>Start Your Journey</h2>
+      <form id="registerFormElement">
+        <input type="text" id="register-username" placeholder="Full Name" required />
+        <input type="email" id="register-email" placeholder="Email Address" required />
+        <input type="password" id="register-password" placeholder="Create Password" required />
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="emergencyContactName" placeholder="closeone name" required style="flex:1;" />
+          <input type="tel" id="emergencyContactPhone" placeholder="Their Number" required style="flex:1;" />
+        </div>
+        <button type="submit">Join SoulSync</button>
+      </form>
+      <p>Already part of our community? <a href="#" id="showLogin">Sign In</a></p>
+    </div>
+  </div>
+
+  <script>
+    // Toggle forms
+    document.getElementById("showRegister").addEventListener("click", function (e) {
+      e.preventDefault();
+      document.getElementById("loginForm").classList.remove("active");
+      document.getElementById("registerForm").classList.add("active");
+    });
+
+    document.getElementById("showLogin").addEventListener("click", function (e) {
+      e.preventDefault();
+      document.getElementById("registerForm").classList.remove("active");
+      document.getElementById("loginForm").classList.add("active");
+    });
+
+    // Register logic
+    document.getElementById("registerFormElement").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const registerName = document.getElementById("register-username").value.trim();
+      const registerEmail = document.getElementById("register-email").value.trim();
+      const registerPassword = document.getElementById("register-password").value;
+      const contact1Name = document.getElementById("emergencyContactName").value.trim();
+      const contact1Phone = document.getElementById("emergencyContactPhone").value.trim();
+
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      if (users.find(user => user.email === registerEmail)) {
+        alert("User already exists!");
+        return;
+      }
+
+      users.push({
+        name: registerName,
+        email: registerEmail,
+        password: registerPassword,
+        emergencyContacts: [{ name: contact1Name, phone: contact1Phone }]
+      });
+
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Registration successful! You can now log in.");
+      document.getElementById("showLogin").click();
+    });
+
+    // Login logic
+    document.getElementById("loginFormElement").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const loginEmail = document.getElementById("loginEmail").value.trim();
+      const loginPassword = document.getElementById("loginPassword").value;
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      const user = users.find(user => user.email === loginEmail && user.password === loginPassword);
+
+      if (user) {
+  localStorage.setItem("loggedInUser", JSON.stringify(user));
+  window.location.href = "dashboard.html";
+} else {
+  alert("Invalid credentials. Please register first!");
+}
+
+  </script>
+</body>
+
+  
+<script>
+  // Form toggle logic
+  document.getElementById("showRegister").addEventListener("click", function (e) {
+    e.preventDefault();
+    document.getElementById("loginForm").classList.remove("active");
+    document.getElementById("registerForm").classList.add("active");
+  });
+
+  document.getElementById("showLogin").addEventListener("click", function (e) {
+    e.preventDefault();
+    document.getElementById("registerForm").classList.remove("active");
+    document.getElementById("loginForm").classList.add("active");
+  });
+
+  // Register user
+  document.getElementById("registerFormElement").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const registerName = document.getElementById("register-username").value.trim();
+    const registerEmail = document.getElementById("register-email").value.trim();
+    const registerPassword = document.getElementById("register-password").value;
+    const contact1Name = document.getElementById("emergencyContactName").value.trim();
+    const contact1Phone = document.getElementById("emergencyContactPhone").value.trim();
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    if (users.find(user => user.email === registerEmail)) {
+      alert("User already exists!");
+      return;
+    }
+
+    users.push({
+      name: registerName,
+      email: registerEmail,
+      password: registerPassword,
+      emergencyContacts: [
+        { name: contact1Name, phone: contact1Phone }
+      ]
+    });
+
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("Registration successful! You can now log in.");
+    document.getElementById("showLogin").click(); // Toggle to login
+  });
+
+  // Login user
+  document.getElementById("loginFormElement").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const loginEmail = document.getElementById("loginEmail").value.trim();
+    const loginPassword = document.getElementById("loginPassword").value;
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const user = users.find(user => user.email === loginEmail && user.password === loginPassword);
+
+    if (user) {
+      alert(`Welcome back, ${user.name}!`);
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
+      window.location.href = "/dashboard";
+    } else {
+      alert("Invalid credentials. Please register first!");
+    }
+  });
+</script>
+
+  
+  
+  
+  
+</body>
+</html>
